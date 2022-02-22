@@ -63,25 +63,25 @@ if __name__ == '__main__':
 
     path = 's3://karrott-sporlife/raw/congelaciones.csv.gz'
     endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getFrozen"
-    GF = get_frozen(start=start, end=end, path=path, endPoint=endPoint)
+    GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
     GF.capture()
 
     path = 's3://karrott-sporlife/raw/asistencias.csv.gz'
     endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getAssistance"
-    GF = get_frozen(start=start, end=end, path=path, endPoint=endPoint)
+    GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
     GF.capture()
 
     path = 's3://karrott-sporlife/raw/tickets.csv.gz'
     endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getTickets"
-    GF = get_frozen(start=start, end=end, path=path, endPoint=endPoint)
+    GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
     GF.capture()
 
     path = 's3://karrott-sporlife/raw/sesionesPT.csv.gz'
     endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getSessionsPT"
-    GF = get_frozen(start=start, end=end, path=path, endPoint=endPoint)
+    GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
     GF.capture()
 
     path = 's3://karrott-sporlife/raw/clases_reservas.csv.gz'
     endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getReservesClass"
-    GF = get_frozen(start=start, end=end, path=path, endPoint=endPoint)
+    GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
     GF.capture()
