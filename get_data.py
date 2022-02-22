@@ -5,7 +5,7 @@ import utils
 from datetime import datetime, timedelta
 
 
-class get_frozen:
+class get_data:
     token = creeds.token
 
     def __init__(self, *args, **kwargs):
