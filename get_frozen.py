@@ -19,17 +19,16 @@ class get_frozen:
         Realizations la petition de datos sobre los congelamientos
         --------------------------------------------------------
         """
-
-        #### ---- Definimos el header y body ---- ####
-        headers = {"Authorization": self.token}
-        body = {"start": self.start, "end": self.end}
-
-        #### ---- Creamos el header ---- ####
-        solicitud = requests.get(self.host, headers=headers, params=body)
-        response = solicitud.json()
-
         try:
-            if response.status == requests.codes.ok:
+            #### ---- Definimos el header y body ---- ####
+            headers = {"Authorization": self.token}
+            body = {"start": self.start, "end": self.end}
+
+            #### ---- Creamos el header ---- ####
+            solicitud = requests.get(self.host, headers=headers, params=body)
+            response = solicitud.json()
+
+            if response["status"] == requests.codes.ok:
                 self.save(data=response["data"])
         except Exception as e:
             print('Ocurrio un error al realizar la peticion')
