@@ -58,7 +58,7 @@ class get_data:
 
 
 if __name__ == '__main__':
-    start = (datetime.today() - timedelta(days = 30)).strftime("%Y-%m-%d")
+    start = (datetime.today() - timedelta(days=30)).strftime("%Y-%m-%d")
     end = (datetime.today()).strftime("%Y-%m-%d")
 
     path = 's3://karrott-sporlife/raw/congelaciones.csv.gz'
@@ -81,7 +81,9 @@ if __name__ == '__main__':
     GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
     GF.capture()
 
+    start = (datetime.today() - timedelta(days=25)).strftime("%Y-%m-%d")
     path = 's3://karrott-sporlife/raw/clases_reservas.csv.gz'
     endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getReservesClass"
+    
     GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
     GF.capture()
