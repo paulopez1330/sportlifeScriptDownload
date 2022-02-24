@@ -42,18 +42,42 @@ class get_data:
 
                 page += 1
 
-            self.save(data=data)
+            self.parseSpecialData(data)
 
         except Exception as e:
             print('Ocurrio un error al realizar la peticion')
 
-    def save(self, **kwargs):
+    def parseSpecialData(self, data):
+
+        data2 = []
+        p = str(self.path_csv_S3)
+        if p.find('tickets.csv') > 0:
+            for d in data:
+                charges = d['charges']
+                if isinstance(charges, list):
+                    for c in charges:
+                        temp = d
+                        temp["productid"] = c["productid"]
+                        temp['name'] = c["name"]
+                        temp['value'] = c["value"]
+                        temp['desct'] = c["desct"]
+                        temp['total'] = c["total"]
+
+                        data2.append(temp)
+                else:
+                    data2.append(d)
+        else:
+            data2 = data
+
+        self.save(data2)
+
+    def save(self, data):
         """
         Transformamos la data de json object a dataframe, para poder guardarla
         """
         df_history = None
         # df = pd.DataFrame(kwargs["data"])
-        df_now = pd.DataFrame.from_dict(kwargs["data"], orient='columns')
+        df_now = pd.DataFrame.from_dict(data, orient='columns')
 
         #### ---- Concatenamos ---- ####
         try:
@@ -62,7 +86,7 @@ class get_data:
             print('error al leer csv')
 
         if df_history is None:
-            df_now = pd.DataFrame(kwargs["data"])
+            df_now = pd.DataFrame(data)
             utils.save_csv_gz(df_now, self.path_csv_S3)
         else:
             df_consolidado = df_history.append(df_now, ignore_index=True)
@@ -84,6 +108,7 @@ if __name__ == '__main__':
     endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getAssistance"
     GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
     GF.capture()
+
 
     path = 's3://karrott-sporlife/raw/tickets.csv.gz'
     endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getTickets"
