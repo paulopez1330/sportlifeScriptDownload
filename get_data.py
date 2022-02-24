@@ -15,21 +15,35 @@ class get_data:
         self.host = kwargs["endPoint"]
 
     def capture(self):
-        """
-        Realizations la petition de datos sobre los congelamientos
-        --------------------------------------------------------
-        """
+        data = []
+
         try:
             #### ---- Definimos el header y body ---- ####
             headers = {"Authorization": self.token}
-            body = {"start": self.start, "end": self.end}
+            page = 1
+            pagePagination = 1
 
-            #### ---- Creamos el header ---- ####
-            solicitud = requests.get(self.host, headers=headers, params=body)
-            response = solicitud.json()
+            while True:
+                if page > pagePagination:
+                    break
 
-            if response["status"] == requests.codes.ok:
-                self.save(data=response["data"])
+                body = {"start": self.start, "end": self.end, "page": page}
+                solicitud = requests.get(self.host, headers=headers, params=body)
+                response = solicitud.json()
+
+                if response["status"] == requests.codes.ok:
+                    pagePagination = int(response['totalpages'])
+
+                    for d in response['data']:
+                        data.append(d)
+                else:
+                    print('response invalid')
+                    break
+
+                page += 1
+
+            self.save(data=data)
+
         except Exception as e:
             print('Ocurrio un error al realizar la peticion')
 
@@ -81,9 +95,8 @@ if __name__ == '__main__':
     GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
     GF.capture()
 
-    start = (datetime.today() - timedelta(days=25)).strftime("%Y-%m-%d")
     path = 's3://karrott-sporlife/raw/clases_reservas.csv.gz'
     endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getReservesClass"
-    
+
     GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
     GF.capture()
