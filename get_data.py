@@ -22,7 +22,7 @@ class get_data:
             headers = {"Authorization": self.token}
             page = 1
             pagePagination = 1
-
+            print('Download Info' + self.host)
             while True:
                 if page > pagePagination:
                     break
@@ -55,8 +55,6 @@ class get_data:
             for d in data:
                 charges = d['charges']
                 if isinstance(charges, list):
-                    if len(charges) > 1:
-                        print('paseeee')
                     for c in charges:
                         temp = {
                             "userid": d["userid"],
