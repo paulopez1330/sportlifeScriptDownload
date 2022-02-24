@@ -55,13 +55,24 @@ class get_data:
             for d in data:
                 charges = d['charges']
                 if isinstance(charges, list):
+                    if len(charges) > 1:
+                        print('paseeee')
                     for c in charges:
-                        temp = d
-                        temp["productid"] = c["productid"]
-                        temp['name'] = c["name"]
-                        temp['value'] = c["value"]
-                        temp['desct'] = c["desct"]
-                        temp['total'] = c["total"]
+                        temp = {
+                            "userid": d["userid"],
+                            "number": d["number"],
+                            "clubid": d["clubid"],
+                            "club_name": d["club_name"],
+                            "paid_date": d["paid_date"],
+                            "payments": d["payments"],
+                            "vendorid": d["vendorid"],
+                            "cashierid": d["cashierid"],
+                            "productid": c["productid"],
+                            'name': c["name"],
+                            'value': c["value"],
+                            'desct': c["desct"],
+                            'total': c["total"]
+                        }
 
                         data2.append(temp)
                 else:
