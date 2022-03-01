@@ -117,7 +117,7 @@ if __name__ == '__main__':
 
         start = dateStart.strftime("%Y-%m-%d")
         end = (dateStart + timedelta(days=30)).strftime("%Y-%m-%d")
-
+        '''
         path = 's3://karrott-sporlife/raw/congelaciones.csv.gz'
         endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getFrozen"
         GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
@@ -128,7 +128,7 @@ if __name__ == '__main__':
         GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
         GF.capture()
 
-
+        '''
         path = 's3://karrott-sporlife/raw/tickets.csv.gz'
         endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getTickets"
         GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
