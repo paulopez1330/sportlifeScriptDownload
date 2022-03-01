@@ -50,7 +50,7 @@ def save_pickle(df, file_path):
 def save_csv_gz(df, file_path, index=False):
     #chequeamos si tiene extension .gz
     if file_path[-3:]!='.gz':
-        print('Se agrega extension ".gz" a {:s}'.format(file_path))
+        #print('Se agrega extension ".gz" a {:s}'.format(file_path))
         file_path = file_path + '.gz'
     if 's3://' not in file_path:    #si la salida no es s3, chequeamos si hay que crear algun directorio
         directory = os.path.dirname(file_path)
