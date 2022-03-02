@@ -22,7 +22,7 @@ class get_data:
             headers = {"Authorization": self.token}
             page = 1
             pagePagination = 1
-            print('Download Info :' + self.host)
+            # print('Download Info :' + self.host)
             while True:
                 if page > pagePagination:
                     break
@@ -37,7 +37,7 @@ class get_data:
                     for d in response['data']:
                         data.append(d)
                 else:
-                    print('response invalid')
+                    # print('response invalid')
                     break
 
                 page += 1
@@ -46,7 +46,7 @@ class get_data:
                 self.parseSpecialData(data)
 
         except Exception as e:
-            print('Ocurrio un error al realizar la peticion')
+            print(f'Ocurrio un error al realizar la peticion: start = {self.start} , end = {self.end}')
 
     def parseSpecialData(self, data):
 
@@ -106,11 +106,9 @@ class get_data:
 
 
 if __name__ == '__main__':
-    start = (datetime.today() - timedelta(days=30)).strftime("%Y-%m-%d")
-    end = (datetime.today()).strftime("%Y-%m-%d")
 
+    dateStart = (datetime.today() - timedelta(days=30)).date()
     dateStart = date(2010, 1, 1)
-
     while True:
         if dateStart > datetime.today().date():
             break
@@ -122,27 +120,27 @@ if __name__ == '__main__':
         endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getFrozen"
         GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
         GF.capture()
-        '''
+
         path = 's3://karrott-sporlife/raw/asistencias.csv.gz'
         endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getAssistance"
         GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
         GF.capture()
-
-        '''
-        path = 's3://karrott-sporlife/raw/tickets.csv.gz'
-        endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getTickets"
-        GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
-        GF.capture()
-
+        
         path = 's3://karrott-sporlife/raw/sesionesPT.csv.gz'
         endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getSessionsPT"
         GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
         GF.capture()
-
+        
         path = 's3://karrott-sporlife/raw/clases_reservas.csv.gz'
         endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getReservesClass"
 
         GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
         GF.capture()
         '''
+        path = 's3://karrott-sporlife/raw/tickets.csv.gz'
+        endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getTickets"
+        GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
+        GF.capture()
+
         dateStart = dateStart + timedelta(days=30)
+
