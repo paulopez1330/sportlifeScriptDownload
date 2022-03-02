@@ -46,7 +46,7 @@ class get_data:
                 self.parseSpecialData(data)
 
         except Exception as e:
-            print(f'Ocurrio un error al realizar la peticion: start = {self.start} , end = {self.end}')
+            print(f'Ocurrio un error al realizar la peticion: start = {self.start} , end = {self.end}   - error: {e}')
 
     def parseSpecialData(self, data):
 
@@ -115,6 +115,9 @@ if __name__ == '__main__':
 
         start = dateStart.strftime("%Y-%m-%d")
         end = (dateStart + timedelta(days=30)).strftime("%Y-%m-%d")
+
+        start = '2017-07-23'
+        end = '2017-08-22'
         '''
         path = 's3://karrott-sporlife/raw/congelaciones.csv.gz'
         endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getFrozen"
