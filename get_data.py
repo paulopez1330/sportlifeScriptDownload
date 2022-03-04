@@ -33,9 +33,9 @@ class get_data:
 
                 if response["status"] == requests.codes.ok:
                     pagePagination = int(response['totalpages'])
-
-                    for d in response['data']:
-                        data.append(d)
+                    if len(response['data']) > 0:
+                        for r in response['data']:
+                            data.append(r)
                 else:
                     # print('response invalid')
                     break
@@ -43,66 +43,89 @@ class get_data:
                 page += 1
 
             if len(data) > 0:
-                self.parseSpecialData(data)
+                self.save(data)
 
         except Exception as e:
             print(f'Ocurrio un error al realizar la peticion: start = {self.start} , end = {self.end}   - error: {e}')
 
-    def parseSpecialData(self, data):
-
-        data2 = []
-        p = str(self.path_csv_S3)
-        if p.find('tickets.csv') > 0:
-            for d in data:
-                charges = d['charges']
-                if isinstance(charges, list):
-                    for c in charges:
-                        temp = {
-                            "userid": d["userid"],
-                            "number": d["number"],
-                            "clubid": d["clubid"],
-                            "club_name": d["club_name"],
-                            "paid_date": d["paid_date"],
-                            "payments": d["payments"],
-                            "vendorid": d["vendorid"],
-                            "cashierid": d["cashierid"],
-                            "productid": c["productid"],
-                            'name': c["name"],
-                            'value': c["value"],
-                            'desct': c["desct"],
-                            'total': c["total"]
-                        }
-
-                        data2.append(temp)
-                else:
-                    data2.append(d)
-        else:
-            data2 = data
-
-        self.save(data2)
-
     def save(self, data):
-        """
-        Transformamos la data de json object a dataframe, para poder guardarla
-        """
         df_history = None
-        # df = pd.DataFrame(kwargs["data"])
-        df_now = pd.DataFrame.from_dict(data, orient='columns')
+        data_new = []
+        df_new = None
+        exist = False
 
-        #### ---- Concatenamos ---- ####
         try:
             df_history = pd.read_csv(self.path_csv_S3)
         except:
-            print('error al leer csv')
+            print('error al leer csv historico')
+
+        for d in data:
+            if str(self.path_csv_S3).find('tickets.csv') > 0:
+                if df_history is None:
+                    exist = False
+                else:
+                    q = df_history.query(f"userid=='{d['userid']}' and number=={d['number']} and clubid=={d['clubid']} and paid_date=='{d['paid_date']}'")
+                    exist = len(q) > 0
+
+                if not exist:
+                    charges = d['charges']
+                    if isinstance(charges, list):
+                        for c in charges:
+                            data_new.append({
+                                "userid": d["userid"],
+                                "number": d["number"],
+                                "clubid": d["clubid"],
+                                "club_name": d["club_name"],
+                                "paid_date": d["paid_date"],
+                                "payments": d["payments"],
+                                "vendorid": d["vendorid"],
+                                "cashierid": d["cashierid"],
+                                "productid": c["productid"],
+                                'name': c["name"],
+                                'value': c["value"],
+                                'desct': c["desct"],
+                                'total': c["total"]
+                            })
+                    else:
+                        data_new.append({
+                                "userid": d["userid"],
+                                "number": d["number"],
+                                "clubid": d["clubid"],
+                                "club_name": d["club_name"],
+                                "paid_date": d["paid_date"],
+                                "payments": d["payments"],
+                                "vendorid": d["vendorid"],
+                                "cashierid": d["cashierid"],
+                                "productid": "",
+                                'name': "",
+                                'value': "",
+                                'desct': "",
+                                'total': "",
+                            })
 
         if df_history is None:
-            df_now = pd.DataFrame(data)
-            utils.save_csv_gz(df_now, self.path_csv_S3)
+            df_new = pd.DataFrame.from_dict(data_new)
+            utils.save_csv_gz(df_new, self.path_csv_S3)
         else:
-            df_consolidado = df_history.append(df_now, ignore_index=True)
-            df_consolidado = df_consolidado.drop_duplicates(keep=False)
-            utils.save_csv_gz(df_consolidado, self.path_csv_S3)
-        #### ---- Guardamos ----- ####
+            if len(data_new) > 0:
+                df_consolidado = pd.concat([df_history, pd.DataFrame.from_dict(data_new)], ignore_index=True)
+                utils.save_csv_gz(df_consolidado, self.path_csv_S3)
+
+    def try_parse_int(self, value):
+        try:
+            return int(value)
+        except:
+            return value
+
+    def try_strptime(self, value, fmts=None):
+        d = value
+        if fmts is None:
+            fmts = '%d-%m-%Y'
+        try:
+            d = datetime.strptime(value, fmts)
+        except:
+            pass
+        return d
 
 
 if __name__ == '__main__':
@@ -112,15 +135,19 @@ if __name__ == '__main__':
     while True:
         if dateStart > datetime.today().date():
             break
-
-        start = dateStart.strftime("%Y-%m-%d")
-        end = (dateStart + timedelta(days=30)).strftime("%Y-%m-%d")
-
+    
+        start = dateStart.strftime("%Y-%m-%d 00:00:00")
+        end = (dateStart + timedelta(days=30)).strftime("%Y-%m-%d 23:59:59")
+        '''
+        start = '2022-02-25 00:00:00'
+        end = '2022-03-25 23:59:59'
+        print('procesando informacion')
+    
         path = 's3://karrott-sporlife/raw/congelaciones.csv.gz'
         endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getFrozen"
         GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
         GF.capture()
-
+    
         path = 's3://karrott-sporlife/raw/asistencias.csv.gz'
         endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getAssistance"
         GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
@@ -133,9 +160,15 @@ if __name__ == '__main__':
         
         path = 's3://karrott-sporlife/raw/clases_reservas.csv.gz'
         endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getReservesClass"
-
+    
         GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
         GF.capture()
+    
+        path = 's3://karrott-sporlife/raw/tickets.csv.gz'
+        endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getTickets"
+        GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
+        GF.capture()
+        '''
 
         path = 's3://karrott-sporlife/raw/tickets.csv.gz'
         endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getTickets"
