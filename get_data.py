@@ -143,7 +143,7 @@ class get_data:
 if __name__ == '__main__':
 
     dateStart = (datetime.today() - timedelta(days=30)).date()
-    dateStart = date(2017, 1, 1)
+    dateStart = date(2010, 1, 1)
     while True:
         if dateStart > datetime.today().date():
             break
@@ -182,9 +182,9 @@ if __name__ == '__main__':
         GF.capture()
         '''
 
-        print(f'fecha start: {start}, fecha end: {end}' )
-        path = 's3://karrott-sporlife/raw/tickets.csv.gz'
-        endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getTickets"
+        print(f'fecha start: {start}, fecha end: {end}')
+        path = 's3://karrott-sporlife/raw/congelaciones.csv.gz'
+        endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getFrozen"
         GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
         GF.capture()
 
