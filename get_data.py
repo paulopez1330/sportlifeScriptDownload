@@ -103,6 +103,18 @@ class get_data:
                                 'total': "",
                             })
 
+            elif str(self.path_csv_S3).find('congelaciones.csv') > 0:
+                if df_history is None:
+                    exist = False
+                else:
+                    q = df_history.query(f"userid=='{d['userid']}' and clubid=={d['clubid']} and contractid=={d['contractid']} and comment=='{d['comment']}' and start=='{d['start']}' and end=='{d['end']}'")
+                    exist = len(q) > 0
+
+                if not exist:
+                    data_new.append(d)
+                else:
+                    pass
+
         if df_history is None:
             df_new = pd.DataFrame.from_dict(data_new)
             utils.save_csv_gz(df_new, self.path_csv_S3)
@@ -131,7 +143,7 @@ class get_data:
 if __name__ == '__main__':
 
     dateStart = (datetime.today() - timedelta(days=30)).date()
-    dateStart = date(2010, 1, 1)
+    dateStart = date(2017, 1, 1)
     while True:
         if dateStart > datetime.today().date():
             break
@@ -170,6 +182,7 @@ if __name__ == '__main__':
         GF.capture()
         '''
 
+        print(f'fecha start: {start}, fecha end: {end}' )
         path = 's3://karrott-sporlife/raw/tickets.csv.gz'
         endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getTickets"
         GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
