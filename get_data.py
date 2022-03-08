@@ -139,17 +139,18 @@ class get_data:
                 else:
                     pass
 
-            elif str(self.path_csv_S3).find('clases_reservas.csv') > 0:
+            elif str(self.path_csv_S3).find('asistencias.csv') > 0:
                 if df_history is None:
                     exist = False
                 else:
-                    q = df_history.query(f"userid=='{d['userid']}' and clubid=={d['clubid']} and date=='{d['date']}' and status=='{d['status']}'")
+                    q = df_history.query(f"userid=='{d['userid']}' and clubid=={d['clubid']} and date=='{d['date']}' and hour_start=='{d['hour_start']}' and hour_end=='{d['hour_end']}' and motive=='{d['motive']}'")
                     exist = len(q) > 0
 
                 if not exist:
                     data_new.append(d)
                 else:
                     pass
+
         if df_history is None:
             df_new = pd.DataFrame.from_dict(data_new)
             utils.save_csv_gz(df_new, self.path_csv_S3)
@@ -218,8 +219,8 @@ if __name__ == '__main__':
 
         print(f'fecha start: {start}, fecha end: {end}')
 
-        path = 's3://karrott-sporlife/raw/sesionesPT.csv.gz'
-        endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getSessionsPT"
+        path = 's3://karrott-sporlife/raw/clases_reservas.csv.gz'
+        endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getReservesClass"    
         GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
         GF.capture()
 
