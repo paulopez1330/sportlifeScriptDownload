@@ -219,10 +219,11 @@ if __name__ == '__main__':
 
         print(f'fecha start: {start}, fecha end: {end}')
 
-        path = 's3://karrott-sporlife/raw/clases_reservas.csv.gz'
-        endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getReservesClass"    
+        path = 's3://karrott-sporlife/raw/asistencias.csv.gz'
+        endPoint = "https://sportlifesa.grupodtg.com/api/karrot/getAssistance"
         GF = get_data(start=start, end=end, path=path, endPoint=endPoint)
         GF.capture()
+
 
         dateStart = dateStart + timedelta(days=30)
 
